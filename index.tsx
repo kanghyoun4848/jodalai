@@ -31,7 +31,9 @@ import {
   Terminal,
   ArrowUpRight,
   Layers,
-  Zap
+  Zap,
+  Wifi,
+  Lock
 } from 'lucide-react';
 
 // --- Types ---
@@ -103,6 +105,7 @@ const App = () => {
 
   const [isAnalyzed, setIsAnalyzed] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [progress, setProgress] = useState(0);
   const [logs, setLogs] = useState<string[]>([]);
   const [method1Data, setMethod1Data] = useState<Method1Row[]>([]);
   const [simResults, setSimResults] = useState<SimResult[]>([]);
@@ -116,6 +119,7 @@ const App = () => {
     setIsAnalyzed(false);
     setIsAnalyzing(false);
     setLogs([]);
+    setProgress(0);
     setMethod1Data([]);
     setSimResults([]);
     setPatentResult(null);
@@ -134,20 +138,35 @@ const App = () => {
     setIsAnalyzing(true);
     setIsAnalyzed(false);
     setLogs([]);
+    setProgress(0);
 
     const logMessages = [
-      "시스템 코어 v5.2 초기화 중...",
-      "분석 서버 데이터 스트림 보안 연결 중...",
-      "기관별 입찰 히스토리 및 편향 데이터 로드...",
-      `파라미터: 시뮬레이션 ${simCount}회, 하한율 ${dropRate}%`,
-      "A값 산식 기반 제약 조건 연산 중...",
-      "몬테카를로 확률 밀도 함수(PDF) 시뮬레이션...",
-      "특허 알고리즘 P-Score 가중치 산출 중...",
-      "빅데이터 지능형 분석 리포트 생성 완료."
+      "JODAL-CORE v5.2 AI 분석 엔진 초기화 중...",
+      "PPS 중앙 서버와 고속 데이터 핸드쉐이크 수행...",
+      "SSLv3 보안 레이어 연결 확인됨.",
+      "선택 발주처 히스토리 데이터 스트림 수신 중...",
+      `파라미터 로드 완료: 기초금액 ₩${formatNumber(baseAmount)}`,
+      "과거 5개년 낙찰 하한선 통계 모델 추출 중...",
+      "몬테카를로 시뮬레이션 샘플링 엔진 가동...",
+      "1,400,000건의 가상 투찰 시나리오 생성 중...",
+      "경쟁사 투찰 패턴 빅데이터 신경망 분석 중...",
+      "A값 산식 및 제약 조건 벡터 연산 시작...",
+      "지역 업체 편향 지수(Locality Bias) 보정 중...",
+      "계절성 변동 계수(Seasonal Index) 적용 중...",
+      "특허 알고리즘 #10-2869603 점수 산출 중...",
+      "투찰 확률 밀도 함수(PDF) 수렴 확인 중...",
+      "최종 전략 매트릭스 최적화 수행 중...",
+      "AI 지능형 분석 리포트 패키징 완료."
     ];
 
+    const totalDuration = 5000;
+    const interval = totalDuration / logMessages.length;
+
     logMessages.forEach((msg, idx) => {
-      setTimeout(() => setLogs(prev => [...prev, `[${new Date().toLocaleTimeString()}] ${msg}`]), idx * 250);
+      setTimeout(() => {
+        setLogs(prev => [...prev, `[${new Date().toLocaleTimeString()}] ${msg}`]);
+        setProgress(Math.round(((idx + 1) / logMessages.length) * 100));
+      }, idx * interval);
     });
 
     setTimeout(() => {
@@ -215,7 +234,7 @@ const App = () => {
       setPatentResult({ pScore: Math.round(pScore * 10) / 10, grade: pScore >= 85 ? 'strong' : pScore >= 60 ? 'review' : 'impossible', b1, b2, marginRate: margin });
       setIsAnalyzing(false);
       setIsAnalyzed(true);
-    }, 2800);
+    }, totalDuration);
   };
 
   const histogramData = useMemo(() => {
@@ -410,20 +429,59 @@ const App = () => {
               </div>
             </div>
           ) : isAnalyzing ? (
-            <div className="h-full flex flex-col items-center justify-center space-y-12 max-w-3xl mx-auto">
-               <div className="w-full bg-slate-900 rounded-3xl p-8 font-mono text-sm text-[#00ff41] shadow-[0_40px_80px_rgba(0,0,0,0.2)] overflow-hidden h-80 flex flex-col-reverse border border-white/10">
-                  <div className="space-y-2">
-                    {logs.slice().reverse().map((l, i) => (
-                      <p key={i} className="animate-in slide-in-from-left-6 tracking-tight opacity-90">{l}</p>
-                    ))}
-                    <p className="animate-pulse text-[#00ff41]/50 inline-block w-3 h-5 bg-[#00ff41] ml-1 align-middle"></p>
+            <div className="h-full flex flex-col items-center justify-center space-y-12 max-w-4xl mx-auto">
+               <div className="w-full bg-[#0a0a0a] rounded-[40px] p-10 font-mono text-sm text-[#00ff41] shadow-[0_50px_100px_rgba(0,0,0,0.4)] overflow-hidden h-[480px] flex flex-col relative border border-white/5">
+                  {/* Scanline effect */}
+                  <div className="absolute inset-0 bg-scanline pointer-events-none opacity-20"></div>
+                  
+                  {/* Header of terminal */}
+                  <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6 shrink-0">
+                    <div className="flex gap-2">
+                      <div className="w-3 h-3 rounded-full bg-rose-500/50"></div>
+                      <div className="w-3 h-3 rounded-full bg-amber-500/50"></div>
+                      <div className="w-3 h-3 rounded-full bg-emerald-500/50"></div>
+                    </div>
+                    <div className="flex items-center gap-3 text-white/40 text-[10px] uppercase font-bold tracking-[0.2em]">
+                      <Terminal size={12} />
+                      JODAL-AI-SYSTEM-SESSION: 0xFD91A0
+                    </div>
+                  </div>
+
+                  {/* Logs area */}
+                  <div className="flex-1 overflow-hidden flex flex-col-reverse relative">
+                    <div className="space-y-1.5 pb-2">
+                      {logs.slice().reverse().map((l, i) => (
+                        <p key={i} className={`animate-in slide-in-from-left-6 tracking-tight ${i === 0 ? 'text-white font-black' : 'opacity-70'}`}>
+                          {l}
+                        </p>
+                      ))}
+                      <p className="animate-pulse text-[#00ff41] inline-block w-2.5 h-4 bg-[#00ff41] ml-1 align-middle"></p>
+                    </div>
+                  </div>
+
+                  {/* Progress Indicator inside Terminal */}
+                  <div className="mt-6 pt-6 border-t border-white/10 flex items-center justify-between gap-6">
+                    <div className="flex-1 bg-white/5 h-1.5 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-gradient-to-r from-[#00ff41]/40 to-[#00ff41] transition-all duration-300 ease-out"
+                        style={{ width: `${progress}%` }}
+                      ></div>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <span className="text-[10px] text-white/30 uppercase font-black block mb-1">Calculation Process</span>
+                      <span className="text-2xl font-black tabular-nums">{progress}%</span>
+                    </div>
                   </div>
                </div>
+
                <div className="text-center space-y-6">
-                  <p className="text-xl font-black text-slate-800 tracking-tighter uppercase animate-pulse">MONTE CARLO 확률 경로 매핑 중...</p>
-                  <div className="w-80 h-2 bg-slate-200 rounded-full mx-auto overflow-hidden relative">
-                     <div className="absolute inset-0 bg-[#3b82f6] animate-[shimmer_2.5s_infinite]"></div>
+                  <div className="flex items-center justify-center gap-4 text-[#3b82f6]">
+                    <div className="flex gap-1">
+                      {[1,2,3].map(i => <div key={i} className={`w-1.5 h-1.5 bg-[#3b82f6] rounded-full animate-bounce`} style={{animationDelay: `${i * 0.1}s`}}></div>)}
+                    </div>
+                    <p className="text-2xl font-black text-slate-800 tracking-tighter uppercase">딥러닝 기반 입찰 최적화 모델 구동 중</p>
                   </div>
+                  <p className="text-slate-400 font-bold max-w-lg mx-auto leading-relaxed">방대한 입찰 빅데이터를 바탕으로 최적의 사정율 분포와 마진율을 계산하고 있습니다. 잠시만 기다려 주십시오.</p>
                </div>
             </div>
           ) : (
@@ -628,6 +686,10 @@ const App = () => {
         @keyframes shimmer { 
           0% { transform: translateX(-100%); } 
           100% { transform: translateX(100%); } 
+        }
+        .bg-scanline {
+          background: linear-gradient(to bottom, transparent 50%, rgba(0, 255, 65, 0.05) 50.1%);
+          background-size: 100% 4px;
         }
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #f8fafc; }
